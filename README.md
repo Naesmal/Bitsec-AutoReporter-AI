@@ -25,7 +25,7 @@ The Bitsec subnet enables decentralized vulnerability detection through multiple
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/bitsec-auto-reporter.git
+git clone https://github.com/Naesmal/bitsec-auto-reporter.git
 cd bitsec-auto-reporter
 
 # Create a virtual environment
