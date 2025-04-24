@@ -1,0 +1,24 @@
+{
+    "miner_id": "16Uiu2HAkzYFHsqbwt64ZztWxVeZtpJm45sstgzrQUuQi7JxN1KuT",
+    "timestamp": "2025-04-23T14:32:17Z",
+    "contract_hash": "0x7a2d52c1f9a8d57a32b6d63c358f26b9e68c6e9a",
+    "vulnerabilities": [
+      {
+        "type": "Reentrancy",
+        "severity": "high",
+        "line_numbers": [45, 46, 47],
+        "description": "The contract is vulnerable to reentrancy attacks because it updates the state after external calls.",
+        "code_snippet": "function withdraw(uint256 amount) public {\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    payable(msg.sender).transfer(amount); // External call before state update\n    balances[msg.sender] -= amount; // State update after external call\n}",
+        "recommendation": "Move the state update before the external call to prevent reentrancy attacks."
+      },
+      {
+        "type": "Integer Overflow",
+        "severity": "medium",
+        "line_numbers": [78],
+        "description": "The addition operation doesn't check for integer overflow which could lead to unexpected behavior.",
+        "code_snippet": "function addReward(uint256 reward) public {\n    totalRewards += reward; // Potential overflow\n}",
+        "recommendation": "Use SafeMath library or Solidity 0.8.0+ which has built-in overflow checks."
+      }
+    ],
+    "analysis_summary": "The contract has significant security issues including a high severity reentrancy vulnerability that could lead to fund drainage. Medium severity issues like integer overflow should also be addressed. Overall security score: 4/10."
+  }

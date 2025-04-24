@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Report - {{contract_name}}</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1d4ed8;
+            --critical: #dc2626;
+            --high: #ea580c;
+            --medium: #eab308;
+            --low: #16a34a;
+            --info: #0ea5e9;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--background);
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3, h4 {
+            margin-top: 0;
+            font-weight: 600;
+        }
+        
+        h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+            margin-top: 40px;
+            color: var(--primary-color);
+        }
+        
+        h3 {
+            font-size: 1.4em;
+            margin-top: 30px;
+        }
+        
+        h4 {
+            font-size: 1.2em;
+            margin-top: 25px;
+        }
+        
+        .meta-info {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .meta-info p {
+            margin: 5px 0;
+        }
+        
+        .risk-score {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .risk-meter {
+            height: 30px;
+            background-color: #e5e7eb;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .risk-fill {
+            height: 100%;
+            border-radius: 15px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .risk-level {
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .severity-counts {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .severity-count {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 100px;
+            margin: 5px;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .critical {
+            background-color: var(--critical);
+        }
+        
+        .high {
+            background-color: var(--high);
+        }
+        
+        .medium {
+            background-color: var(--medium);
+        }
+        
+        .low {
+            background-color: var(--low);
+        }
+        
+        .info {
+            background-color: var(--info);
+        }
+        
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 30px 0;
+        }
+        
+        .chart {
+            max-width: 500px;
+            margin: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .vulnerability {
+            background-color: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .vulnerability h4 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .vulnerability-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .meta-item {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            background-color: #f1f5f9;
+        }
+        
+        .code-block {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 15px 0;
+        }
+        
+        .recommendation {
+            background-color: #f0fdf4;
+            border-left: 4px solid var(--low);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px;
+            }
+            
+            .severity-counts {
+                flex-direction: column;
+            }
+            
+            .severity-count {
+                margin: 5px 0;
+            }
+            
+            .chart {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Contract Vulnerability Report</h1>
+            <p>Powered by Bitsec AutoReporter AI</p>
+        </header>
+        
+        <div class="meta-info">
+            <h2>Contract Information</h2>
+            <p><strong>Contract Name:</strong> {{contract_name}}</p>
+            <p><strong>Contract Hash:</strong> {{contract_hash}}</p>
+            <p><strong>Report Generated:</strong> {{timestamp}}</p>
+            <p><strong>Analysis Contributors:</strong> {{miner_count}} miners</p>
+        </div>
+        
+        <h2>Executive Summary</h2>
+        <div class="vulnerability">
+            {{executive_summary|safe}}
+        </div>
+        
+        <h2>Risk Assessment</h2>
+        <div class="risk-score">{{risk_score}}/10</div>
+        
+        <div class="risk-meter">
+            <div class="risk-fill" style="width: {{risk_score*10}}%; background-color: 
+                {% if risk_score >= 7.5 %}var(--critical){% 
+                elif risk_score >= 5 %}var(--high){% 
+                elif risk_score >= 2.5 %}var(--medium){% 
+                else %}var(--low){% endif %};"></div>
+        </div>
+        
+        <div class="risk-level" style="color: 
+            {% if risk_score >= 7.5 %}var(--critical){% 
+            elif risk_score >= 5 %}var(--high){% 
+            elif risk_score >= 2.5 %}var(--medium){% 
+            else %}var(--low){% endif %};">
+            {% if risk_score >= 7.5 %}CRITICAL RISK{% 
+            elif risk_score >= 5 %}HIGH RISK{% 
+            elif risk_score >= 2.5 %}MEDIUM RISK{% 
+            else %}LOW RISK{% endif %}
+        </div>
+        
+        <h2>Vulnerability Summary</h2>
+        <div class="severity-counts">
+            <div class="severity-count critical">
+                <h3>{{severity_counts.get('critical', 0)}}</h3>
+                <p>Critical</p>
+            </div>
+            <div class="severity-count high">
+                <h3>{{severity_counts.get('high', 0)}}</h3>
+                <p>High</p>
+            </div>
+            <div class="severity-count medium">
+                <h3>{{severity_counts.get('medium', 0)}}</h3>
+                <p>Medium</p>
+            </div>
+            <div class="severity-count low">
+                <h3>{{severity_counts.get('low', 0)}}</h3>
+                <p>Low</p>
+            </div>
+            <div class="severity-count info">
+                <h3>{{severity_counts.get('info', 0)}}</h3>
+                <p>Info</p>
+            </div>
+        </div>
+        
+        {% if charts %}
+        <h2>Vulnerability Distribution</h2>
+        <div class="charts">
+            {% if charts.get('severity_chart') %}
+            <div class="chart">
+                <h3>Severity Distribution</h3>
+                <img src="{{charts.get('severity_chart')}}" alt="Severity Distribution">
+            </div>
+            {% endif %}
+            
+            {% if charts.get('consensus_chart') %}
+            <div class="chart">
+                <h3>Top Vulnerabilities by Consensus</h3>
+                <img src="{{charts.get('consensus_chart')}}" alt="Consensus Distribution">
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        
+        <h2>Vulnerability Details</h2>
+        
+        {% for severity in ['critical', 'high', 'medium', 'low', 'info'] %}
+        {% if severity_groups.get(severity) %}
+        <h3 style="color: 
+            {% if severity == 'critical' %}var(--critical){% 
+            elif severity == 'high' %}var(--high){% 
+            elif severity == 'medium' %}var(--medium){% 
+            elif severity == 'low' %}var(--low){% 
+            else %}var(--info){% endif %};">
+            {{severity|capitalize}} Severity Vulnerabilities
+        </h3>
+        
+        {% for vuln in severity_groups.get(severity) %}
+        <div class="vulnerability">
+            <h4>{{loop.index}}. {{vuln.type}}</h4>
+            
+            <div class="vulnerability-meta">
+                <span class="meta-item"><strong>Consensus:</strong> {{vuln.confidence_percent}}</span>
+                <span class="meta-item"><strong>Affected Lines:</strong> {{vuln.line_numbers|join(', ')}}</span>
+            </div>
+            
+            <p>
+                {% if vuln.enhanced_description %}
+                {{vuln.enhanced_description|safe}}
+                {% else %}
+                {{vuln.description}}
+                {% endif %}
+            </p>
+            
+            {% if vuln.code_snippet %}
+            <h5>Vulnerable Code:</h5>
+            <pre class="code-block"><code>{{vuln.code_snippet}}</code></pre>
+            {% endif %}
+            
+            <div class="recommendation">
+                <h5>Recommendation:</h5>
+                <p>{{vuln.recommendation}}</p>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endfor %}
+        
+        <div class="footer">
+            <p>Generated by Bitsec AutoReporter AI</p>
+            <p>This report aggregates vulnerability findings from multiple miners in the Bitsec network.</p>
+            <p>The consensus-based approach helps filter out false positives and prioritize the most critical issues.</p>
+        </div>
+    </div>
+</body>
+</html>

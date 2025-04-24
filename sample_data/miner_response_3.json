@@ -1,0 +1,41 @@
+{
+    "miner_id": "16Uiu2HAm8bTPKrhf4YuHEMokfQySABUcdf3DwpBmDkxXGuYs124v",
+    "timestamp": "2025-04-23T14:34:12Z",
+    "contract_hash": "0x7a2d52c1f9a8d57a32b6d63c358f26b9e68c6e9a",
+    "contract_name": "TokenSwap",
+    "vulnerabilities": [
+      {
+        "type": "Reentrancy",
+        "severity": "high",
+        "line_numbers": [44, 45, 46, 47],
+        "description": "This contract is vulnerable to reentrancy attacks in the withdraw function. The external call to transfer ETH occurs before the state is updated, allowing an attacker to recursively call the withdraw function before the state is updated, potentially draining the contract's funds.",
+        "code_snippet": "function withdraw(uint256 amount) public {\n    require(balances[msg.sender] >= amount, \"Insufficient balance\");\n    (bool success, ) = msg.sender.call{value: amount}(\"\");\n    require(success, \"Transfer failed\");\n    balances[msg.sender] -= amount;\n}",
+        "recommendation": "Follow the Checks-Effects-Interactions pattern. Update the state variables before making external calls. In this case, decrease the sender's balance before transferring ETH: `balances[msg.sender] -= amount; (bool success, ) = msg.sender.call{value: amount}(\"\");`"
+      },
+      {
+        "type": "Unchecked Return Value",
+        "severity": "medium",
+        "line_numbers": [112, 113],
+        "description": "The contract uses low-level call but does not properly check the return value in some places, which might lead to silent failures.",
+        "code_snippet": "function executeExternalCall(address target, bytes memory data) public onlyOwner {\n    target.call(data);\n}",
+        "recommendation": "Always check the return value of low-level calls and handle potential failures appropriately. For example: `(bool success, ) = target.call(data); require(success, \"External call failed\");`"
+      },
+      {
+        "type": "Front-Running",
+        "severity": "medium",
+        "line_numbers": [156, 157, 158],
+        "description": "The swapTokens function is vulnerable to front-running attacks because it uses the current exchange rate without any slippage protection.",
+        "code_snippet": "function swapTokens(uint256 amount) public {\n    uint256 exchangeRate = getExchangeRate();\n    uint256 tokensToReceive = amount * exchangeRate;\n    // ... rest of the swap logic\n}",
+        "recommendation": "Implement slippage protection by allowing users to specify a minimum amount of tokens they expect to receive, and verify that the actual amount meets this minimum requirement."
+      },
+      {
+        "type": "Integer Overflow",
+        "severity": "low",
+        "line_numbers": [78],
+        "description": "The contract uses Solidity version <0.8.0 but does not use SafeMath for arithmetic operations, which could lead to integer overflow/underflow.",
+        "code_snippet": "function addReward(uint256 reward) public {\n    totalRewards += reward;\n}",
+        "recommendation": "Either upgrade to Solidity 0.8.0+ which has built-in overflow checks, or use the SafeMath library for all arithmetic operations."
+      }
+    ],
+    "analysis_summary": "The contract has several security issues, with the reentrancy vulnerability being the most critical. The contract should not be deployed without addressing at least the high severity issues. Overall security score: 3.5/10."
+  }

@@ -1,0 +1,32 @@
+{
+    "miner_id": "16Uiu2HAkyYtzNoWuF3ULcfHvULZ9g4pZcPH8iVJbAvdWJR9BoZH5",
+    "timestamp": "2025-04-23T14:33:05Z",
+    "contract_hash": "0x7a2d52c1f9a8d57a32b6d63c358f26b9e68c6e9a",
+    "vulnerabilities": [
+      {
+        "type": "Reentrancy Attack",
+        "severity": "critical",
+        "line_numbers": [45, 47],
+        "description": "The contract allows reentrancy attacks since it calls an external contract before updating its state variables.",
+        "code_snippet": "payable(msg.sender).transfer(amount);\nbalances[msg.sender] -= amount;",
+        "recommendation": "Follow the Checks-Effects-Interactions pattern by updating the state variables before making external calls."
+      },
+      {
+        "type": "Access Control",
+        "severity": "high",
+        "line_numbers": [92, 93],
+        "description": "The setAdmin function lacks proper access controls, allowing anyone to become an admin.",
+        "code_snippet": "function setAdmin(address newAdmin) public {\n    admin = newAdmin;\n}",
+        "recommendation": "Add the onlyOwner or onlyAdmin modifier to restrict access to privileged functions."
+      },
+      {
+        "type": "Timestamp Dependence",
+        "severity": "low",
+        "line_numbers": [120],
+        "description": "The contract uses block.timestamp as part of its logic which can be manipulated by miners.",
+        "code_snippet": "if (block.timestamp > deadline) { ... }",
+        "recommendation": "Consider if precise timing is necessary, or use block numbers instead for predictable intervals."
+      }
+    ],
+    "analysis_summary": "Multiple security issues detected, with the reentrancy vulnerability being the most critical. The contract should not be deployed without fixing these issues. Overall security score: 3/10."
+  }
